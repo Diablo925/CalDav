@@ -1,0 +1,97 @@
+<?php
+/**
+ *
+ * Installer for CalDav Module for sentora 1.0.0
+ * Version : 100
+ */
+ 
+require_once('cnf/db.php');
+require_once('dryden/db/driver.class.php');
+require_once('dryden/debug/logger.class.php');
+require_once('dryden/runtime/dataobject.class.php');
+require_once('dryden/sys/versions.class.php');
+require_once('dryden/ctrl/options.class.php');
+require_once('dryden/ctrl/auth.class.php');
+require_once('dryden/ctrl/users.class.php');
+require_once('dryden/fs/director.class.php');
+require_once('inc/dbc.inc.php');
+
+//install
+installModule();
+
+function installModule(){
+
+			global $zdbh;
+			global $controller;
+			
+			if(!is_dir("/etc/sentora/panel/etc/apps/caldav/")) {
+			mkdir("/etc/sentora/panel/etc/apps/caldav/");
+			chmod('/etc/sentora/panel/etc/apps/caldav/', 0777);
+			
+			shell_exec("unzip /etc/sentora/panel/modules/caldav/deploy/caldav.zip -d /etc/sentora/panel/etc/apps/caldav/");
+			chmod("/etc/sentora/panel/etc/apps/caldav/Specific/", 0777);
+			chmod("/etc/sentora/panel/etc/apps/caldav/Specific/config.php", 0777);
+			
+			$numrows = $zdbh->prepare("CREATE TABLE IF NOT EXISTS sentora_core.x_caldav (
+                                      `cd_id_fk` int(11) NOT NULL AUTO_INCREMENT,
+                                      `cd_acc_fk` int(6) NOT NULL,
+                                      `cd_name_vc` varchar(225) NULL,
+									  `cd_disname_fk` varchar(225) NULL,
+									  `cd_mail_fk` varchar(225) NULL,
+									  `cd_created_ts` int(11) NULL,
+									  `cd_deleted_ts` int(225) NULL,
+                                      PRIMARY KEY (`cd_id_fk`)
+                                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+     		$numrows->execute();
+			
+			//create database
+    		$numrows = $zdbh->prepare("CREATE DATABASE IF NOT EXISTS `sentora_caldav` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci; USE `sentora_caldav`;");
+    		$numrows->execute();
+			
+			$numrows = $zdbh->prepare("CREATE TABLE IF NOT EXISTS users (
+    		id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    		username VARCHAR(50),
+    		digesta1 VARCHAR(32),
+    		UNIQUE(username)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+     		$numrows->execute();
+			
+			$numrows = $zdbh->prepare("CREATE TABLE IF NOT EXISTS principals (
+    		id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    		uri VARCHAR(200) NOT NULL,
+    		email VARCHAR(80),
+    		displayname VARCHAR(80),
+    		vcardurl VARCHAR(255),
+    		UNIQUE(uri)) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+     		$numrows->execute();
+			
+			$numrows = $zdbh->prepare("CREATE TABLE IF NOT EXISTS calendarobjects (
+    		id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    		calendardata MEDIUMBLOB,
+    		uri VARCHAR(200),
+    		calendarid INTEGER UNSIGNED NOT NULL,
+    		lastmodified INT(11) UNSIGNED,
+    		etag VARCHAR(32),
+    		size INT(11) UNSIGNED NOT NULL,
+    		componenttype VARCHAR(8),
+    		firstoccurence INT(11) UNSIGNED,
+    		lastoccurence INT(11) UNSIGNED,
+    		UNIQUE(calendarid, uri)) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+     		$numrows->execute();
+			
+			$numrows = $zdbh->prepare("CREATE TABLE IF NOT EXISTS calendars (
+    		id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    		principaluri VARCHAR(100),
+    		displayname VARCHAR(100),
+    		uri VARCHAR(200),
+    		ctag INTEGER UNSIGNED NOT NULL DEFAULT '0',
+    		description TEXT,
+    		calendarorder INTEGER UNSIGNED NOT NULL DEFAULT '0',
+    		calendarcolor VARCHAR(10),
+    		timezone TEXT,
+    		components VARCHAR(21),
+    		transparent TINYINT(1) NOT NULL DEFAULT '0',
+    		UNIQUE(principaluri, uri)) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+     		$numrows->execute();
+			}
+			}
+?>

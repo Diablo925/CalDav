@@ -1,0 +1,119 @@
+<div class="zmodule_content panel" id="zmodule_header_<@ ModuleName @>">
+    <div class="panel-heading">
+        <img src="<@ ModuleIcon @>" width="35" height="35" border="0" alt="<@ ModuleName @>">
+
+        <div class="zmodule_title">
+            <@ ModuleName @>
+        </div>
+
+        <div class="zmodule_desc" id="zmodule_desc_<@ ModuleName @>"><@ ModuleDesc @></div>
+		
+    </div>
+	
+	<@ Result @>
+	<form action="./?module=caldav&action=Help" method="post">
+	<button class="button-loader btn btn-primary" type="submit" id="button" name="inHelp" id="inHelp"><: Help :></button>
+	<@ CSFR_Tag @>
+	</form>
+	<% if isHelp %>
+	<div class="zform_wrapper">
+        <h3><: Help :>:</h3>
+		<@ ShowHelp @>
+	</div>
+	<% endif %>
+	
+	<% if isEditUser %>
+    <div class="zform_wrapper">
+        <h3><: Edit User :>:</h3>
+        <form action="./?module=caldav&action=UpdateUser" method="post">
+            <table class="table table-striped">
+			<% loop EditCurrentUsers %>
+			<tr>
+			<th><: Usrname :>:</th>
+			<td><input type="text" name="inUser" id="inUser" value="<& username &>" readonly></td>
+			</tr>
+			<tr>
+			<th><: Display Name :>:</th>
+			<td><input type="text" name="inDisplayName" id="inDisplayName" value="<& displayname &>"></td>
+			</tr>
+			<tr>
+			<th><: Set Password :>:</th>
+			<td><input type="password" name="inPassword" id="inPassword" value="" ></td>
+			</tr>
+			<tr>
+			<th></th>
+			<td><button class="button-loader btn btn-primary" type="submit" id="button" name="inSave" id="inSave" value="<& id &>"><: Save :></button>
+			<button class="button-loader btn btn-default" type="button" onclick="window.location.href='./?module=caldav';return false;"><: Cancel :></button></td>
+			</tr>
+			<% endloop %>
+			</table>
+			<@ CSFR_Tag @>	
+        </form>
+    </div>
+    <% endif %>
+	
+	<% if isCreateUser %>
+	<h3><: Create new user :></h3>
+	<form action="./?module=caldav&action=NewUser" method="post">
+	<table class="table table-striped">
+                            <tr>
+                                <th nowrap="nowrap"><: Username :>:</th>
+                                <td>
+									<input type="text" name="inUserName" id="inUserName"/>
+                                </td>
+								<td>
+                                    <select name="inDomain" id="inDomain">
+                                        <option value="" selected="selected">-- <: Select a domain :> --</option>
+                                        <% loop DomainList %>
+                                        <option value="<& domain &>">@<& domain &></option>
+                                        <% endloop %>
+                                    </select>
+                                </td>
+                            </tr>
+							<tr>
+                                <th nowrap="nowrap"><: Display Name :>:</th>
+                                <td>
+									<input type="text" name="inDisplayName" id="inDisplayName" />
+                                </td>
+                            </tr>
+							<tr>
+                                <th nowrap="nowrap"><: Password :>:</th>
+                                <td>
+									<input type="password" name="inPassword" id="inPassword" />
+                                </td>
+                            </tr>
+							<tr>
+                                <th nowrap="nowrap"><button class="button-loader btn btn-primary" type="submit" id="button" name="inSave" id="inSave"><: Save :></button></th>
+                                <td>
+                                </td>
+								<td></td>
+                            </tr>
+					</table>
+	<@ CSFR_Tag @>
+	</form>
+	<% endif %>
+	
+	<div class="zgrid_wrapper">
+	<h3><: Users :></h3>
+		<table class="table table-striped">
+		<tr>
+			<th><: Username :></th>
+			<th><: Display Name :></th>
+			<th></th>
+		</tr>
+				<% loop UsernameList %>
+				<form action="./?module=caldav&action=UserList" method="post">
+                <tr>
+                    <td><& UserName &></td>
+					<td><& DisplayName &></td>
+					<td><input type="hidden" name="inId" id="inId" value="<& id &>">
+					<button class="button-loader btn btn-primary" type="submit" id="button" name="inEdit" id="inEdit" value="inEdit"><: Edit :></button>
+                    <button class="button-loader delete btn btn-danger" type="submit" id="button" name="inDelete" id="inDelete" value="inDelete"><: Delete :></button></td>
+				</tr>
+					<@ CSFR_Tag @>	
+					</form>
+				<% endloop %>	
+		</table>	
+	</div>
+	<small>Powered by <a href="http://baikal-server.com/" target="_blank">baikal</a> Lightweight CalDAV server</small> <a href="etc/apps/caldav/" target="_blank">Check server status</a>
+</div>

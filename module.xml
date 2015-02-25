@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+    <name>CalDav</name>
+    <version>100</version>
+    <defaultcat>Mail</defaultcat>
+    <desc>Calender Manage Powered by baikal Lightweight CalDAV</desc>
+    <authorname>Diablo925</authorname>
+    <authoremail>carsten@alio.dk</authoremail>
+    <authorurl>http://Alio.dk/</authorurl>
+    <updateurl></updateurl>
+</module>
